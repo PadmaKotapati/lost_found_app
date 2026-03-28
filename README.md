@@ -1,3 +1,96 @@
+# 🎒 Campus Lost and Found System
+
+A full-stack web application designed to help students easily report, search, and recover lost items within a campus.  
+This platform improves item tracking, reduces loss, and ensures faster recovery using a simple and user-friendly interface.
+
+---
+
+## 🚀 Live Overview
+
+🔹 Users can report lost or found items  
+🔹 Search items using filters  
+🔹 Match lost items with found items  
+🔹 Secure login & registration system  
+
+---
+
+## 🛠️ Tech Stack
+
+### 🌐 Frontend
+- React.js
+- HTML5, CSS3, JavaScript
+
+### ⚙️ Backend
+- Spring Boot (Java)
+- REST API
+
+### 🗄️ Database
+- MySQL
+
+### 🔧 Tools
+- Git & GitHub
+- Eclipse IDE
+- VS Code
+- Postman (API Testing)
+
+---
+
+## 📁 Project Structure
+lost_found_app/
+│
+├── 📁 frontend/                      # React Application
+│   ├── 📁 public/
+│   │   └── index.html
+│   │
+│   ├── 📁 src/
+│   │   ├── 📁 components/
+│   │   │   ├── 📁 LoginComponent/
+│   │   │   ├── 📁 ItemComponent/
+│   │   │   ├── 📁 Profile/
+│   │   │   └── 📁 Dashboard/
+│   │   │
+│   │   ├── 📁 services/
+│   │   │   ├── LoginService.js
+│   │   │   ├── FoundItemService.js
+│   │   │   ├── LostItemService.js
+│   │   │   └── MatchItemService.js
+│   │   │
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   └── styles.css
+│   │
+│   ├── package.json
+│   └── README.md
+│
+├── 📁 backend/                       # Spring Boot Application
+│   ├── 📁 src/main/java/
+│   │   └── 📁 com/infosys/lostfound/
+│   │       ├── 📁 controller/
+│   │       ├── 📁 service/
+│   │       ├── 📁 repository/
+│   │       ├── 📁 model/
+│   │       └── 📁 dto/
+│   │
+│   ├── 📁 src/main/resources/
+│   │   ├── application.properties
+│   │
+│   ├── pom.xml
+│   └── mvnw
+│
+├── .gitignore
+├── README.md
+
+
+3. Run Backend
+Open project in Eclipse
+Navigate to:
+lostFoundLocatorApplication
+Run as:
+Spring Boot App
+
+Backend runs on:
+👉 http://localhost:9595
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
