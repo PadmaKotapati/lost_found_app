@@ -1,0 +1,86 @@
+/* Full background */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #ffd6e8, #ffc2e2);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Login card */
+.login-container {
+  background: #ffffff;
+  padding: 40px;
+  width: 380px;
+  border-radius: 20px;
+  box-shadow: 0px 10px 30px rgba(255, 105, 180, 0.2);
+  text-align: center;
+}
+
+/* Title */
+.login-title {
+  color: #d63384;
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+/* Input group */
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.form-group label {
+  color: #c2185b;
+  font-size: 14px;
+}
+
+/* Input fields */
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ffc2e2;
+  background-color: #fff0f6;
+  outline: none;
+  margin-top: 5px;
+  transition: 0.3s;
+}
+
+.form-input:focus {
+  border-color: #ff69b4;
+  box-shadow: 0 0 6px #ffb6d9;
+}
+
+/* Login button */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to right, #ff69b4, #ff1493);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(255, 20, 147, 0.4);
+}
+
+/* Register link */
+.register-link {
+  margin-top: 15px;
+  color: #c2185b;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
