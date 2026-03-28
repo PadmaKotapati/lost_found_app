@@ -36,49 +36,7 @@ This platform improves item tracking, reduces loss, and ensures faster recovery 
 ---
 
 ## 📁 Project Structure
-lost_found_app/
-│
-├── 📁 frontend/                      # React Application
-│   ├── 📁 public/
-│   │   └── index.html
-│   │
-│   ├── 📁 src/
-│   │   ├── 📁 components/
-│   │   │   ├── 📁 LoginComponent/
-│   │   │   ├── 📁 ItemComponent/
-│   │   │   ├── 📁 Profile/
-│   │   │   └── 📁 Dashboard/
-│   │   │
-│   │   ├── 📁 services/
-│   │   │   ├── LoginService.js
-│   │   │   ├── FoundItemService.js
-│   │   │   ├── LostItemService.js
-│   │   │   └── MatchItemService.js
-│   │   │
-│   │   ├── App.js
-│   │   ├── index.js
-│   │   └── styles.css
-│   │
-│   ├── package.json
-│   └── README.md
-│
-├── 📁 backend/                       # Spring Boot Application
-│   ├── 📁 src/main/java/
-│   │   └── 📁 com/infosys/lostfound/
-│   │       ├── 📁 controller/
-│   │       ├── 📁 service/
-│   │       ├── 📁 repository/
-│   │       ├── 📁 model/
-│   │       └── 📁 dto/
-│   │
-│   ├── 📁 src/main/resources/
-│   │   ├── application.properties
-│   │
-│   ├── pom.xml
-│   └── mvnw
-│
-├── .gitignore
-├── README.md
+<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/103712d5-fbe9-4032-8f8a-cbbe3c3d8b71" />
 
 
 3. Run Backend
