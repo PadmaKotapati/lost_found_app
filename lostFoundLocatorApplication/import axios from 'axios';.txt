@@ -1,0 +1,435 @@
+import axios from 'axios';
+
+const LOGIN_URL = 'http://localhost:9595/lostfound/login';
+const ROLE_URL = 'http://localhost:9595/lostfound/role';
+const USER_URL = 'http://localhost:9595/lostfound/user';
+const LOGOUT_URL = 'http://localhost:9595/lostfound/logout';
+const ME_URL = 'http://localhost:9595/lostfound/me';
+
+// REGISTER USER
+export const registerNewUser = (user) => {
+    return axios.post(LOGIN_URL, user, {
+        withCredentials: true
+    });
+};
+
+// VALIDATE USER
+export const validateUser=(userId,password)=>{
+     return axios.get(`${LOGIN_URL}/${userId}/${password}`,{
+        withCredentials: true
+    });
+    }
+ 
+
+// GET USER DETAILS
+export const getUserDetails = () => {
+    return axios.get(LOGIN_URL, {
+        withCredentials: true
+    });
+};
+
+// DELETE USER
+export const deleteUser = (username) => {
+    return axios.delete(
+        `http://localhost:9595/lostfound/login/${username}`,
+        {
+            withCredentials: true
+        }
+    );
+};
+
+// GET USER ID
+export const getUserId = () => {
+    return axios.get(USER_URL, {
+        withCredentials: true
+    });
+};
+
+// GET ROLE
+export const getRole = () => {
+    return axios.get(ROLE_URL, {
+        withCredentials: true
+    });
+};
+
+// GET CURRENT USER
+export const getUser = () => {
+    return axios.get(ME_URL, {
+        withCredentials: true
+    });
+};
+
+// LOGOUT
+export const logout = () => {
+    return axios.post(LOGOUT_URL, {}, {
+        withCredentials: true
+    });
+};
+Admin menu:
+import React from "react";
+import {useNavigate} from 'react-router-dom';
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import { logout } from "../../Services/LoginService";
+const AdminMenu=()=>{
+let navigate=useNavigate();
+   const handleLogout = () => {
+     logout().then(() => {
+           localStorage.clear();
+           sessionStorage.clear();
+           navigate('/');
+       })
+    };
+    return (
+   <div className=".container">
+    <br/>
+    <div  align="center" style={{backgroundColor:'green'}}>
+    <h1 className = "text-center" style={{color:'burlywood'}}><u><i>Lost & Found Admin Menu</i></u></h1>
+    </div>
+    <Navbar expand="lg" bg="warning">
+     <Navbar.Collapse id="basic-navbar-nav">
+      <Nav className="me-auto">
+        <NavDropdown title="Student" id="collasible-nav-dropdown"><b>Student</b>
+          <NavDropdown.Item href="">Student List</NavDropdown.Item>
+        </NavDropdown>
+        <NavDropdown title="Items" id="collasible-nav-dropdown"><b>Items</b>
+          <NavDropdown.Item href="">Found Item List</NavDropdown.Item>
+          <NavDropdown.Item href="">Lost Item List</NavDropdown.Item>
+          <NavDropdown.Item href="">Match Item List</NavDropdown.Item>
+        </NavDropdown>
+        <Nav.Link href=""><b>Chatting</b></Nav.Link>
+          <Nav.Link onClick={handleLogout}><b>Logout</b></Nav.Link>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
+  </div>
+    )
+    
+}
+export default AdminMenu
+LoginController:package edu.infosys.lostFoundLocatorApplication.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import edu.infosys.lostFoundLocatorApplication.bean.LostfounderUser;
+import edu.infosys.lostFoundLocatorApplication.service.LostfoundUserService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@RestController
+@RequestMapping("/lostfound")
+public class LoginController {
+
+    @Autowired
+    private LostfoundUserService service;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    // REGISTER USER
+    @PostMapping("/login")
+    public void registerNewUser(@RequestBody LostfounderUser user) {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        service.saveUser(user);
+    }
+
+    // VALIDATE USER
+    @GetMapping("/login/{userId}/{password}")
+    public String validateUser(@PathVariable String userId,
+                               @PathVariable String password) {
+
+        String role = "false";
+
+        try {
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(userId, password));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            role = service.getRole();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return role;
+    }
+
+    // GET USER DETAILS
+    @GetMapping("/login")
+    public LostfounderUser getUserDetails() {
+        return service.getUser();
+    }
+
+    // DELETE USER
+    @DeleteMapping("/login/{username}")
+    public void deleteUser(@PathVariable String username) {
+        service.deleteUser(username);
+    }
+
+    // GET USER ID
+    @GetMapping("/user")
+    public String getUserId() {
+        return service.getUserId();
+    }
+
+    // GET ROLE
+    @GetMapping("/role")
+    public String getRole() {
+        return service.getRole();
+    }
+
+    // GET CURRENT USER
+    @GetMapping("/me")
+    public LostfounderUser getUser() {
+        return service.getUser();
+    }
+
+    // LOGOUT
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request,
+                                         HttpServletResponse response) {
+
+        SecurityContextHolder.clearContext();
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("Logout successful");
+    }
+}
+LoginService:import axios from 'axios';
+
+const LOGIN_URL = 'http://localhost:9595/lostfound/login';
+const ROLE_URL = 'http://localhost:9595/lostfound/role';
+const USER_URL = 'http://localhost:9595/lostfound/user';
+const LOGOUT_URL = 'http://localhost:9595/lostfound/logout';
+const ME_URL = 'http://localhost:9595/lostfound/me';
+
+// REGISTER USER
+export const registerNewUser = (user) => {
+    return axios.post(LOGIN_URL, user, {
+        withCredentials: true
+    });
+};
+
+// VALIDATE USER
+export const validateUser=(userId,password)=>{
+     return axios.get(`${LOGIN_URL}/${userId}/${password}`,{
+        withCredentials: true
+    });
+    }
+ 
+
+// GET USER DETAILS
+export const getUserDetails = () => {
+    return axios.get(LOGIN_URL, {
+        withCredentials: true
+    });
+};
+
+// DELETE USER
+export const deleteUser = (username) => {
+    return axios.delete(
+        `http://localhost:9595/lostfound/login/${username}`,
+        {
+            withCredentials: true
+        }
+    );
+};
+
+// GET USER ID
+export const getUserId = () => {
+    return axios.get(USER_URL, {
+        withCredentials: true
+    });
+};
+
+// GET ROLE
+export const getRole = () => {
+    return axios.get(ROLE_URL, {
+        withCredentials: true
+    });
+};
+
+// GET CURRENT USER
+export const getUser = () => {
+    return axios.get(ME_URL, {
+        withCredentials: true
+    });
+};
+
+// LOGOUT
+export const logout = () => {
+    return axios.post(LOGOUT_URL, {}, {
+        withCredentials: true
+    });
+};Pom.xml:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.12</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>edu.infosys</groupId>
+    <artifactId>lostFoundLocatorApplication</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>lostFoundLocatorApplication</name>
+    <description>Demo project for Spring Boot</description>
+    <url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- Spring Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Data JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+
+        <!-- MySQL Driver -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+        <!---chating-->
+            <groupId>org.apache.commons</groupId>
+           <artifactId>commons-text</artifactId>
+            <version>1.10.0</version>
+          </dependency>
+         <dependency>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-websocket</artifactId>
+         </dependency>
+
+ 
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+LoginService.jsx:
+
+import axios from "axios";
+
+const BASE_URL = "http://localhost:9595/lostfound";
+
+export const registerNewUser = (user) => {
+  return axios.post(`${BASE_URL}/register`, user, { withCredentials: true });
+};
+
+export const validateUser = (username, password) => {
+  return axios.post(
+    `${BASE_URL}/login`,
+    { username, password },
+    { withCredentials: true }
+  );
+};
+
+export const getUserDetails = () => {
+  return axios.get(`${BASE_URL}/login`, { withCredentials: true });
+};
+
+export const deleteUser = (username) => {
+  return axios.delete(`${BASE_URL}/user/${username}`, { withCredentials: true });
+};
+
+export const getUserId = () => {
+  return axios.get(`${BASE_URL}/user`, { withCredentials: true });
+};
+
+export const getRole = () => {
+  return axios.get(`${BASE_URL}/role`, { withCredentials: true });
+};
+
+export const getUser = () => {
+  return axios.get(`${BASE_URL}/me`, { withCredentials: true });
+};
+
+export const logout = () => {
+  return axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+};
