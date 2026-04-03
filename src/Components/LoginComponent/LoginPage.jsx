@@ -17,23 +17,27 @@ const LoginPage = () => {
   const validateLogin = (e) => {
     e.preventDefault();
 
-    validateUser(loginData.username, loginData.password).then((response) => {
+   validateUser(loginData.username, loginData.password)
+  .then((response) => {
 
-      let role = String(response.data);
+    let role = String(response.data);
 
-      if (role === "Admin") {
-        localStorage.setItem("username", loginData.username);
-        navigate("/admin-menu");
-      }
-      else if (role === "Student") {
-        localStorage.setItem("username", loginData.username);
-        navigate("/student-menu");
-      }
-      else {
-        setFlag(false);
-      }
+    if (role === "Admin") {
+      localStorage.setItem("username", loginData.username);
+      navigate("/admin-menu");
+    } else if (role === "Student") {
+      localStorage.setItem("username", loginData.username);
+      navigate("/student-menu");
+    } else {
+      setFlag(false);
+    }
 
-    });
+  })
+  .catch((error) => {
+    console.log(error);
+    setFlag(false);
+  });
+
   };
 
   const onChangeHandler = (event) => {

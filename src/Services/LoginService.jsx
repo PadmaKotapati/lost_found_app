@@ -1,73 +1,97 @@
-import axios from 'axios';
+import axios from "axios";
 
-const LOGIN_URL = 'http://localhost:9595/lostfound/login';
-const REGISTER_URL = 'http://localhost:9595/lostfound/register';
-const ROLE_URL = 'http://localhost:9595/lostfound/role';
-const USER_URL = "http://localhost:9595/lostfound/me";
-const LOGOUT_URL = 'http://localhost:9595/lostfound/logout';
-const ME_URL = 'http://localhost:9595/lostfound/me';
+const BASE_URL = "http://localhost:9595/lostfound";
 
-// REGISTER USER
-export const registerNewUser = (user) => {
-    return axios.post(REGISTER_URL, user, {
-        withCredentials: true
-    });
-};
+// ================= AUTH =================
 
-// LOGIN USER
+// LOGIN
 export const validateUser = (username, password) => {
-
-    const user = {
-        username: username,
-        password: password
-    };
-
-    return axios.post(LOGIN_URL, user, {
-        withCredentials: true
-    });
+  return axios.post(`${BASE_URL}/login`, { username, password }, {
+    withCredentials: true
+  });
 };
 
-// GET CURRENT USER DETAILS
-export const getUserDetails = () => {
-    return axios.get(ME_URL, {
-        withCredentials: true
-    });
-};
-
-// DELETE USER
-export const deleteUser = (username) => {
-    return axios.delete(
-        `http://localhost:9595/lostfound/user/${username}`,
-        {
-            withCredentials: true
-        }
-    );
-};
-
-// GET USER ID
-export const getUserId = () => {
-    return axios.get(USER_URL, {
-        withCredentials: true
-    });
-};
-
-// GET ROLE
-export const getRole = () => {
-    return axios.get(ROLE_URL, {
-        withCredentials: true
-    });
-};
-
-// GET CURRENT USER
-export const getUser = () => {
-    return axios.get(ME_URL, {
-        withCredentials: true
-    });
+// REGISTER
+export const registerNewUser = (user) => {
+  return axios.post(`${BASE_URL}/register`, user, {
+    withCredentials: true
+  });
 };
 
 // LOGOUT
 export const logout = () => {
-    return axios.post(LOGOUT_URL, {}, {
-        withCredentials: true
-    });
+  return axios.post(`${BASE_URL}/logout`, {}, {
+    withCredentials: true
+  });
+};
+
+// ================= USER =================
+
+// GET USER
+export const getUser = () => {
+  return axios.get(`${BASE_URL}/me`, {
+    withCredentials: true
+  });
+};
+
+// ✅ ADD THIS (FIX ERROR)
+export const getUserDetails = () => {
+  return axios.get(`${BASE_URL}/me`, {
+    withCredentials: true
+  });
+};
+
+// ✅ ADD THIS (FIX ERROR)
+export const getUserId = () => {
+  return axios.get(`${BASE_URL}/me`, {
+    withCredentials: true
+  });
+};
+
+// GET ROLE
+export const getRole = () => {
+  return axios.get(`${BASE_URL}/role`, {
+    withCredentials: true
+  });
+};
+
+// DELETE USER
+export const deleteUser = (username) => {
+  return axios.delete(`${BASE_URL}/user/${username}`, {
+    withCredentials: true
+  });
+};
+
+// ================= PROFILE =================
+
+// GET PROFILE
+export const getProfile = (username) => {
+  return axios.get(`${BASE_URL}/profile/${username}`, {
+    withCredentials: true
+  });
+};
+
+// UPDATE PROFILE
+export const updateProfile = (username, data) => {
+  return axios.put(`${BASE_URL}/profile/${username}`, data, {
+    withCredentials: true
+  });
+};
+
+// CHANGE PASSWORD
+export const changePassword = (username, data) => {
+  return axios.put(`${BASE_URL}/profile/change-password/${username}`, data, {
+    withCredentials: true
+  });
+};
+
+// UPLOAD IMAGE
+export const uploadProfileImage = (username, file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return axios.post(`${BASE_URL}/profile/upload/${username}`, formData, {
+    withCredentials: true,
+    headers: { "Content-Type": "multipart/form-data" }
+  });
 };

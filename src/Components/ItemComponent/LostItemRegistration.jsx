@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserId } from "../../Services/LoginService";
 import { generateLostItemId, saveLostItem } from "../../Services/LostItemService";
-import "../../DisplayView.css";
 
 const LostItemRegistration = () => {
 
   const navigate = useNavigate();
 
-  const [flag, setFlag] = useState(false);
-  const [errors, setErrors] = useState({});
   const [newId, setNewId] = useState("");
   const [ldate, setLdate] = useState("");
-  const [userId, setUserId] = useState("");
 
   const [lostItem, setLostItem] = useState({
     lostItemName: "",
@@ -22,124 +17,93 @@ const LostItemRegistration = () => {
     location: ""
   });
 
-  // ✅ Generate ID
   useEffect(() => {
     generateLostItemId().then(res => setNewId(res.data));
-    getUserId().then(res => setUserId(res.data.username));
   }, []);
 
-  // ✅ Handle Input
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
     setLostItem(prev => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Validation + Submit
-  const handleValidation = () => {
+  const handleSubmit = () => {
 
-    let tempErrors = {};
-    let isValid = true;
-
-    if (!lostItem.lostItemName.trim()) {
-      tempErrors.lostItemName = "Item Name is required";
-      isValid = false;
-    }
-    if (!lostItem.color.trim()) {
-      tempErrors.color = "Color is required";
-      isValid = false;
-    }
-    if (!lostItem.brand.trim()) {
-      tempErrors.brand = "Brand is required";
-      isValid = false;
-    }
-    if (!lostItem.category.trim()) {
-      tempErrors.category = "Category is required";
-      isValid = false;
-    }
-    if (!lostItem.location.trim()) {
-      tempErrors.location = "Location is required";
-      isValid = false;
-    }
     if (!ldate) {
-      alert("Please select date");
-      isValid = false;
+      alert("Select Date");
+      return;
     }
-
-    setErrors(tempErrors);
-
-    if (!isValid) return;
 
     const newLostItem = {
       lostItemId: newId,
-      lostItemName: lostItem.lostItemName,
-      color: lostItem.color,
-      brand: lostItem.brand,
-      category: lostItem.category,
-      location: lostItem.location,
-      username: userId || "student1",
-      lostDate: ldate.toString(),   // ✅ FIX
+      ...lostItem,
+      lostDate: ldate,
       status: false
     };
 
-    console.log("Sending:", newLostItem);
-
     saveLostItem(newLostItem)
-      .then(() => setFlag(true))
-      .catch(err => console.log("ERROR:", err.response));
+      .then(() => {
+        alert("✅ Item Submitted Successfully");
+        navigate("/lost-item-report");
+      })
+      .catch(() => alert("❌ Error"));
   };
 
   return (
-    <div className="container">
-      <div className="card col-md-6 offset-md-3">
-        <div className="login-box">
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>Report Lost Item</h2>
 
-          <h2 className="text-center"><u>Lost Item Form</u></h2>
+        <input value={newId} readOnly style={styles.input} />
 
-          <div className="form-group">
-            <label>Item ID</label>
-            <input className="form-control" value={newId} readOnly />
-          </div>
+        <input name="lostItemName" placeholder="Item Name" style={styles.input} onChange={onChangeHandler}/>
+        <input name="category" placeholder="Category" style={styles.input} onChange={onChangeHandler}/>
+        <input name="color" placeholder="Color" style={styles.input} onChange={onChangeHandler}/>
+        <input name="brand" placeholder="Brand" style={styles.input} onChange={onChangeHandler}/>
+        <input name="location" placeholder="Location" style={styles.input} onChange={onChangeHandler}/>
 
-          <input name="lostItemName" placeholder="Item Name"
-            className="form-control" onChange={onChangeHandler} />
-          <p style={{color:"red"}}>{errors.lostItemName}</p>
+        <input type="date" style={styles.input} onChange={(e)=>setLdate(e.target.value)} />
 
-          <input name="category" placeholder="Category"
-            className="form-control" onChange={onChangeHandler} />
-          <p style={{color:"red"}}>{errors.category}</p>
-
-          <input name="color" placeholder="Color"
-            className="form-control" onChange={onChangeHandler} />
-          <p style={{color:"red"}}>{errors.color}</p>
-
-          <input name="brand" placeholder="Brand"
-            className="form-control" onChange={onChangeHandler} />
-          <p style={{color:"red"}}>{errors.brand}</p>
-
-          <input name="location" placeholder="Location"
-            className="form-control" onChange={onChangeHandler} />
-          <p style={{color:"red"}}>{errors.location}</p>
-
-          <input type="date" className="form-control"
-            onChange={(e) => setLdate(e.target.value)} />
-
-          <br />
-
-          <button className="btn btn-primary" onClick={handleValidation}>
-            Submit
-          </button>
-
-          <button className="btn btn-success"
-            onClick={() => navigate("/student-menu")}>
-            Return
-          </button>
-
-          {flag && <p style={{color:"blue"}}>Submitted Successfully!</p>}
-
-        </div>
+        <button style={styles.btn} onClick={handleSubmit}>Submit</button>
       </div>
     </div>
   );
+};
+
+const styles = {
+  page: {
+    height: "100vh",
+    background: "linear-gradient(135deg,#1e3c72,#2a5298)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  card: {
+    background: "white",
+    padding: "30px",
+    borderRadius: "12px",
+    width: "350px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.4)"
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: "15px"
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "8px 0",
+    borderRadius: "6px",
+    border: "1px solid #ccc"
+  },
+  btn: {
+    width: "100%",
+    padding: "10px",
+    background: "#2a5298",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer"
+  }
 };
 
 export default LostItemRegistration;

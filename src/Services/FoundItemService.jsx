@@ -1,54 +1,41 @@
-import axios from 'axios';
+import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
-const BASE_URL = 'http://localhost:9595/lostfound';
-const FOUND_URL = `${BASE_URL}/found`;
-const FOUND_ID_URL = `${BASE_URL}/found-id`;
-const FOUND_USER_URL = `${BASE_URL}/found-user`;
+const BASE_URL = "http://localhost:9595/lostfound";
 
-// ✅ Save a found item
+// ✅ SAVE
 export const saveFoundItem = (foundItem) => {
-  return axios.post(FOUND_URL, foundItem);
+  return axios.post(`${BASE_URL}/found`, foundItem, {
+    withCredentials: true,
+  });
 };
 
-// ✅ Get all found items
+// ✅ GET ALL
 export const getAllFoundItems = () => {
-  return axios.get(FOUND_URL);
+  return axios.get(`${BASE_URL}/found`, {
+    withCredentials: true,
+  });
 };
 
-// ✅ Get found item by ID
-export const getFoundItemById = (foundItemId) => {
-  return axios.get(`${FOUND_URL}/${foundItemId}`);
-};
-
-// ✅ Update found item
-export const updateFoundItem = (foundItem) => {
-  return axios.put(FOUND_URL, foundItem);
-};
-
-// ✅ Delete found item by ID
-export const deleteFoundItemById = (foundItemId) => {
-  return axios.delete(`${FOUND_URL}/${foundItemId}`);
-};
-
-// ✅ Generate new found item ID
-export const generateFoundItemId = () => {
-  return axios.get(FOUND_ID_URL);
-};
-
-// ✅ Get found items by username
+// ✅ GET BY USER
 export const getFoundItemsByUsername = () => {
   const username = localStorage.getItem("username");
-  return axios.get(`${FOUND_USER_URL}/${username}`);
+  return axios.get(`${BASE_URL}/found-user/${username}`, {
+    withCredentials: true,
+  });
 };
 
+// ✅ GENERATE ID
+export const generateFoundItemId = () => {
+  return axios.get(`${BASE_URL}/found-id`, {
+    withCredentials: true,
+  });
+};
+
+// ✅ MATCH SEARCH
 export const getFoundItemsByLostItem = (id) => {
-  return axios.get(`${BASE_URL}/match/${id}`);
-};
-
-// 🔥🔥🔥 IMPORTANT (THIS WAS MISSING - YOUR ERROR FIX) 🔥🔥🔥
-
-export const saveMatchItem = (data) => {
-  return axios.post(`${BASE_URL}/match`, data);
+  return axios.get(`${BASE_URL}/found-id/${id}`, {
+    withCredentials: true,
+  });
 };

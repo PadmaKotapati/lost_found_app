@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserId } from "../../Services/LoginService";
-import { generateFoundItemId, saveFoundItem } from "../../Services/FoundItemService";
-import "../../DisplayView.css";
+import {
+  generateFoundItemId,
+  saveFoundItem,
+} from "../../Services/FoundItemService";
 
 const FoundItemRegistration = () => {
-
   const navigate = useNavigate();
 
   const [flag, setFlag] = useState(false);
@@ -19,224 +20,149 @@ const FoundItemRegistration = () => {
     color: "",
     brand: "",
     category: "",
-    location: ""
+    location: "",
   });
 
-  // 🔹 Get Found Item ID
   useEffect(() => {
-    generateFoundItemId().then(res => {
-      setNewId(res.data);
-    });
-
-    getUserId().then(res => {
-      setUserId(res.data.username);
-    });
-
+    generateFoundItemId().then((res) => setNewId(res.data));
+    getUserId().then((res) => setUserId(res.data.username));
   }, []);
 
-  // 🔹 Handle input change
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
     setFoundItem({ ...foundItem, [name]: value });
   };
 
-  // 🔹 Validation
   const handleValidation = () => {
-    let tempErrors = {};
-    let isValid = true;
+    let temp = {};
+    let valid = true;
 
-    if (!foundItem.foundItemName.trim()) {
-      tempErrors.foundItemName = "Item Name is required";
-      isValid = false;
-    }
-    if (!foundItem.color.trim()) {
-      tempErrors.color = "Color is required";
-      isValid = false;
-    }
-    if (!foundItem.brand.trim()) {
-      tempErrors.brand = "Brand is required";
-      isValid = false;
-    }
-    if (!foundItem.category.trim()) {
-      tempErrors.category = "Category is required";
-      isValid = false;
-    }
-    if (!foundItem.location.trim()) {
-      tempErrors.location = "Location is required";
-      isValid = false;
-    }
+    Object.entries(foundItem).forEach(([key, val]) => {
+      if (!val.trim()) {
+        temp[key] = "Required";
+        valid = false;
+      }
+    });
+
     if (!fdate) {
-      tempErrors.foundDate = "Date is required";
-      isValid = false;
+      temp.foundDate = "Date required";
+      valid = false;
     }
 
-    setErrors(tempErrors);
+    setErrors(temp);
 
-    if (isValid) {
-      foundItemSubmit();
-    }
+    if (valid) submitData();
   };
 
-  // 🔹 Submit function
-  const foundItemSubmit = () => {
-
-    const newFoundItem = {
+  const submitData = () => {
+    const data = {
       foundItemId: newId,
       foundItemName: foundItem.foundItemName,
       color: foundItem.color,
       brand: foundItem.brand,
       category: foundItem.category,
       location: foundItem.location,
-      username: userId,
-      foundDate: fdate.toString(),
-      status: false
+      username: userId || localStorage.getItem("username"),
+      foundDate: fdate,
+      status: false,
     };
 
-   console.log("Sending DTO:", JSON.stringify(newFoundItem, null, 2));
-
-    saveFoundItem(newFoundItem)
-      .then(res => {
-        console.log("SUCCESS:", res.data);
+    saveFoundItem(data)
+      .then(() => {
         setFlag(true);
-
-        // Reset form
-        setFoundItem({
-          foundItemName: "",
-          color: "",
-          brand: "",
-          category: "",
-          location: ""
-        });
-        setFdate("");
+        alert("✅ Saved Successfully");
       })
-      .catch(err => {
-        console.error("ERROR:", err.response?.data || err.message);
-        alert("Error while saving. Check console.");
-      });
-  };
-
-  // 🔹 Navigate back
-  const returnBack = () => {
-    navigate("/student-menu");
-  };
-
-  // 🔹 New form
-  const nextItem = () => {
-    window.location.reload();
+      .catch(() => alert("❌ Error Saving"));
   };
 
   return (
-    <div className="container">
-      <br />
-      <div className="row">
-        <div className="card col-md-6 offset-md-3">
-          <div className="login-box">
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>Found Item Form</h2>
 
-            <h2 className="text-center">
-              <u>Found Item Form Submission</u>
-            </h2>
+        <input value={newId} readOnly style={styles.input} />
 
-            <div className="form-group">
-              <label>Item Id:</label>
-              <input className="form-control" value={newId} readOnly />
-            </div>
-
-            <div className="form-group">
-              <label>Item Name:</label>
-              <input
-                name="foundItemName"
-                className="form-control"
-                value={foundItem.foundItemName}
-                onChange={onChangeHandler}
-              />
-              <p style={{ color: "red" }}>{errors.foundItemName}</p>
-            </div>
-
-            <div className="form-group">
-              <label>Category:</label>
-              <input
-                name="category"
-                className="form-control"
-                value={foundItem.category}
-                onChange={onChangeHandler}
-              />
-              <p style={{ color: "red" }}>{errors.category}</p>
-            </div>
-
-            <div className="form-group">
-              <label>Color:</label>
-              <input
-                name="color"
-                className="form-control"
-                value={foundItem.color}
-                onChange={onChangeHandler}
-              />
-              <p style={{ color: "red" }}>{errors.color}</p>
-            </div>
-
-            <div className="form-group">
-              <label>Brand:</label>
-              <input
-                name="brand"
-                className="form-control"
-                value={foundItem.brand}
-                onChange={onChangeHandler}
-              />
-              <p style={{ color: "red" }}>{errors.brand}</p>
-            </div>
-
-            <div className="form-group">
-              <label>Location:</label>
-              <input
-                name="location"
-                className="form-control"
-                value={foundItem.location}
-                onChange={onChangeHandler}
-              />
-              <p style={{ color: "red" }}>{errors.location}</p>
-            </div>
-
-            <div className="form-group">
-              <label>Found Date:</label>
-              <input
-                type="date"
-                className="form-control"
-                value={fdate}
-                onChange={(e) => setFdate(e.target.value)}
-              />
-              <p style={{ color: "red" }}>{errors.foundDate}</p>
-            </div>
-
-            <br />
-
-            <button className="btn btn-primary" onClick={handleValidation}>
-              Submit
-            </button>
-
-            &nbsp;&nbsp;
-
-            <button className="btn btn-success" onClick={returnBack}>
-              Return
-            </button>
-
-            <br /><br />
-
-            {flag && (
-              <div>
-                <p style={{ color: "green" }}>
-                  ✅ Submitted Successfully!
-                </p>
-                <button className="btn btn-warning" onClick={nextItem}>
-                  Add Another
-                </button>
-              </div>
-            )}
-
+        {Object.keys(foundItem).map((key) => (
+          <div key={key}>
+            <input
+              name={key}
+              placeholder={key}
+              value={foundItem[key]}
+              onChange={onChangeHandler}
+              style={styles.input}
+            />
+            <p style={styles.error}>{errors[key]}</p>
           </div>
-        </div>
+        ))}
+
+        <input
+          type="date"
+          value={fdate}
+          onChange={(e) => setFdate(e.target.value)}
+          style={styles.input}
+        />
+        <p style={styles.error}>{errors.foundDate}</p>
+
+        <button style={styles.primaryBtn} onClick={handleValidation}>
+          Submit
+        </button>
+
+        <button style={styles.successBtn} onClick={() => navigate("/student-menu")}>
+          Back
+        </button>
+
+        {flag && <p style={styles.success}>Saved Successfully</p>}
       </div>
     </div>
   );
+};
+
+const styles = {
+  page: {
+    height: "100vh",
+    background: "linear-gradient(to right,#4facfe,#00f2fe)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  card: {
+    background: "white",
+    padding: "30px",
+    borderRadius: "12px",
+    width: "400px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: "20px",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    marginBottom: "8px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+  },
+  primaryBtn: {
+    width: "100%",
+    padding: "10px",
+    background: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    marginTop: "10px",
+  },
+  successBtn: {
+    width: "100%",
+    padding: "10px",
+    background: "green",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    marginTop: "10px",
+  },
+  error: { color: "red", fontSize: "12px" },
+  success: { color: "green", textAlign: "center", marginTop: "10px" },
 };
 
 export default FoundItemRegistration;
